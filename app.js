@@ -27,7 +27,7 @@ https.createServer(
     {
         cert: fs.readFileSync(path.join(__dirname, "cert", "cert.pem")),
         key: fs.readFileSync(path.join(__dirname, "cert", "key.pem")),
-        passphrase: "changeme"
+        passphrase: process.env.PASSWD
     }, httpsApp
 ).listen(HTTPS_PORT, () => {
     console.log(`Server is running at ${HTTPS_PORT} port.`)

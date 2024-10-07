@@ -1,0 +1,42 @@
+name: Test
+on:
+    push:
+        branches: [ "main" ]
+    pull_request:
+        branches: [ "main"]
+
+    workflow_dispatch:
+jobs:
+    test-node-app:
+        runs-on: ubuntu-latest
+        # container: node:22-alpine
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Use Node
+              uses: actions/setup-node@v4
+              with:
+                node-version: 22
+                cache: "npm"
+
+            - name: Install dependencies
+              run: npm ci
+
+            - name: Install cert
+              run: mkdir -p cert && openssl req -x509 --newkey rsa:4096 --out ./cert/cert.pem --keyout ./cert/key.pem --days 365 --passout pass:${{ secrets.PASSWD }} -batch
+
+            - name: Replace the PASSWD in .env
+              run: sed -i 's/changeme/${{ secrets.PASSWD }}/g' .env
+
+            - name: Run the app
+              run: |
+                sudo npm run prod &
+                sleep 10
+
+            - name: Test the app
+              run: curl -k --fail https://localhost:443 || exit 1
+
+            - name: Close the app
+              run: sudo pkill -f node

@@ -1,0 +1,13 @@
+# Ignore the following directories
+node_modules/
+cert/
+tmp/
+
+# Ignore all temporary files
+*.tmp
+
+# Ignore all log files
+*.log
+
+# Ignore all cache files
+*.cache
